@@ -1,0 +1,80 @@
+﻿@model List<ShopCar.Controllers.ShopCarController.Production>
+@{
+    ViewBag.Title = "購物車";
+}
+
+<div class="container">
+    <div class="col-sm-7">
+        <table class="table" id="production">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td scope="row">@item.ID</td>
+                            <td>@item.Name</td>
+                            <td>$ @item.Price</td>
+                            <td>
+                                <input id="txtCount_@item.ID" name="txtCount" type="number" style="text-align: center; width: 50px" value="0" min="0" step="1" data-id="@item.ID" data-name="@item.Name" data-price="@item.Price" data-company="@item.Company" onchange="changeCount(this);">
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-5">
+        總金額：<div id="totalAmt">0</div>
+        <br />
+        明細：<div id="detail"></div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    function changeCount(data) {
+        var totalAmt = 0;
+        var strCalculate = "";
+        var arrProduction = [];
+
+        $('#production').find('input').each(function () {
+            totalAmt = totalAmt + $($(this)[0]).attr('data-price') * $(this)[0].value;
+
+            if ($(this)[0].value != 0) {
+                if (strCalculate.length != 0) strCalculate = strCalculate + " + ";
+                strCalculate = strCalculate + $($(this)[0]).attr('data-price') + "*" + $(this)[0].value;
+
+                arrProduction.push({
+                    company: $($(this)[0]).attr('data-company'),
+                    name: $($(this)[0]).attr('data-name'),
+                });
+            }
+        });
+
+        $('#totalAmt').html(strCalculate + " = " + totalAmt);
+
+        $('#detail').html("");
+        var arrCompany = arrProduction.map(item => item.company).filter((value, index, self) => self.indexOf(value) === index);
+        for (var i = 0; i < arrCompany.length; i++) {
+            var p = arrProduction.filter(function (item, index, array) {
+                return item.company === arrCompany[i];
+            });
+
+            $('#detail').html($('#detail').html() + arrCompany[i] + "：<br />");
+            for (var j = 0; j < p.length; j++) {
+                $('#detail').html($('#detail').html() + "  " + p[j].name + "<br />")
+            };
+            $('#detail').html($('#detail').html() + "<br />")
+        }
+
+    }
+
+
+</script>
