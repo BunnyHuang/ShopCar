@@ -96,7 +96,7 @@
             url: '@Url.Action("Info", "ShopCar")',
             type: "POST",
             datatype: "json",
-            data: { m: arrPro },
+            data: { ProductionList: arrPro },
         }).done(function (partialViewResult) {
             $("#Info").html(partialViewResult);
         });

@@ -16,8 +16,12 @@ namespace ShopCar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Info(List<Production> m)
+        public ActionResult Info(List<Production> ProductionList)
         {
+            PurchaseDetailsViewModel m = new PurchaseDetailsViewModel();
+            m.Production = ProductionList.Where(x => x.Count > 0).ToList();
+            m.totalAmt = ProductionList.Where(x => x.Count > 0).Sum(x => x.Price * x.Count);
+
             return View(m);
         }
 
@@ -40,6 +44,12 @@ namespace ShopCar.Controllers
             public string Company { get; set; }
             public int Count { get; set; }
         }
-        
+
+        public class PurchaseDetailsViewModel
+        {
+            public int totalAmt { get; set; }
+            public List<Production> Production { get; set; }
+        }
+
     }
 }

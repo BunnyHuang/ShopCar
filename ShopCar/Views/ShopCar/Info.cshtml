@@ -1,4 +1,4 @@
-﻿@model List<ShopCar.Controllers.ShopCarController.Production>
+﻿@model ShopCar.Controllers.ShopCarController.PurchaseDetailsViewModel
 @{
     ViewBag.Title = "Info";
 }
@@ -6,22 +6,22 @@
 <div>
     總金額：
     <div id="totalAmt">
-        @Html.Label("Calculate", string.Join(" + ", Model.Where(x => x.Count > 0).Select(x => x.Price + " * " + x.Count)))
+        @Html.Label("Calculate", string.Join(" + ", Model.Production.Select(x => x.Price + " * " + x.Count)))
         <label for="Calculate"></label>
-        @if (Model.Where(x => x.Count > 0).Any())
+        @if (Model.Production.Any())
         {
-            @Html.Label("Amount", "= " + Model.Where(x => x.Count > 0).Sum(x => x.Price * x.Count))
+            @Html.Label("Amount", "= " + Model.totalAmt)
             <label for="Amount"></label>
         }
     </div>
     <br />
     明細：<div id="detail"></div>
     @{
-        foreach (var item in Model.Where(x => x.Count > 0).Select(x => x.Company).Distinct())
+        foreach (var item in Model.Production.Select(x => x.Company).Distinct())
         {
             @Html.Label("Company", item)
             <label for="Company"></label>
-            foreach (var i in Model.Where(x => x.Count > 0).Where(x => x.Company == item).Select(x => x.Name))
+            foreach (var i in Model.Production.Where(x => x.Company == item).Select(x => x.Name))
             {
                 @Html.Label("Name", i)
                 <label for="name"></label>
