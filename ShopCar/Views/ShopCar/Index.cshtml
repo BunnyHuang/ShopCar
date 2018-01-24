@@ -32,14 +32,20 @@
         </table>
     </div>
     <div class="col-sm-5">
-        總金額：<div id="totalAmt">0</div>
-        <br />
-        明細：<div id="detail"></div>
-
+        <div>
+            總金額：<div id="totalAmt"></div>
+            <br />
+            明細：<div id="detail"></div>
+        </div>
+        <div style="margin-top: 20px">
+            partial view：<div id="Info"></div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
-    function changeCount(data) {
+    function changeCount() {
+
+        //javascritp
         var totalAmt = 0;
         var strCalculate = "";
         var arrProduction = [];
@@ -73,6 +79,27 @@
             };
             $('#detail').html($('#detail').html() + "<br />")
         }
+
+        //partial view
+        var arrPro = [];
+        $('#production').find('input').each(function () {
+            arrPro.push({
+                ID: $($(this)[0]).attr('data-id'),
+                Name: $($(this)[0]).attr('data-name'),
+                Price: $($(this)[0]).attr('data-price'),
+                Company: $($(this)[0]).attr('data-company'),
+                Count: $(this)[0].value,
+            });
+        });
+
+        $.ajax({
+            url: '@Url.Action("Info", "ShopCar")',
+            type: "POST",
+            datatype: "json",
+            data: { m: arrPro },
+        }).done(function (partialViewResult) {
+            $("#Info").html(partialViewResult);
+        });
 
     }
 
