@@ -4,31 +4,50 @@
 }
 
 <div>
+    購買明細：<div id="detail"></div>
+    <table class="table table-bordered" id="production">
+        <thead>
+            <tr>
+                <th scope="col">商店</th>
+                <th scope="col">商品</th>
+                <th scope="col">價錢</th>
+                <th scope="col">數量</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var item in Model.Production.Select(x => x.Company).Distinct())
+                {
+                    int i = 0;
+                    foreach (var p in Model.Production.Where(x => x.Company == item))
+                    {
+                        <tr>
+                            @if (i == 0)
+                            {
+                            <td rowspan="@Model.Production.Where(x => x.Company == item).Count()">@item</td>
+                                i++;
+                            }
+                            <td>@p.Name</td>
+                            <td>$ @p.DiscountPrice</td>
+                            <td>@p.Count</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
     總金額：
     <div id="totalAmt">
-        @Html.Label("Calculate", string.Join(" + ", Model.Production.Select(x => x.Price + " * " + x.Count)))
+        @Html.Label("Calculate", string.Join(" + ", Model.Production.Select(x => x.DiscountPrice + " * " + x.Count)))
         <label for="Calculate"></label>
+        @Html.Label("Fee", "+ " + string.Join(" + ", Model.Fee))
+        <label for="Fee"></label>
         @if (Model.Production.Any())
         {
             @Html.Label("Amount", "= " + Model.totalAmt)
             <label for="Amount"></label>
         }
     </div>
-    <br />
-    明細：<div id="detail"></div>
-    @{
-        foreach (var item in Model.Production.Select(x => x.Company).Distinct())
-        {
-            @Html.Label("Company", item)
-            <label for="Company"></label>
-            foreach (var i in Model.Production.Where(x => x.Company == item).Select(x => x.Name))
-            {
-                @Html.Label("Name", i)
-                <label for="name"></label>
-            }
-            <br />
-        }
-    }
 </div>
 
 

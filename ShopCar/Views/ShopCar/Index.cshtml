@@ -1,4 +1,4 @@
-﻿@model List<ShopCar.Controllers.ShopCarController.Production>
+﻿@model ShopCar.Controllers.ShopCarController.ShopCarViewModel
 @{
     ViewBag.Title = "購物車";
 }
@@ -16,7 +16,7 @@
             </thead>
             <tbody>
                 @{
-                    foreach (var item in Model)
+                    foreach (var item in Model.Production)
                     {
                         <tr>
                             <td scope="row">@item.ID</td>
@@ -30,6 +30,23 @@
                 }
             </tbody>
         </table>
+        <div>
+            <label class="col-sm-2">物流</label>
+            <div class="col-sm-8">
+                <select id="ddlShipment" class="form-control">
+                    <option value="">請選擇</option>
+                    @{
+                        foreach (var item in Model.Shipment)
+                        {
+                            <option value="@item.ID">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-sm-2" style="text-align: right">
+                <input id="btnCalculate" type="button" class="btn btn-sm" value="計算價錢" onclick="CalculateResult()" />
+            </div>
+        </div>
     </div>
     <div class="col-sm-5">
         <div>
@@ -37,10 +54,11 @@
             <br />
             明細：<div id="detail"></div>
         </div>
-        <div style="margin-top: 20px">
-            partial view：<div id="Info"></div>
-        </div>
     </div>
+</div>
+<hr />
+<div class="container">
+    <div id="Info"></div>
 </div>
 <script type="text/javascript">
     function changeCount() {
@@ -79,29 +97,44 @@
             };
             $('#detail').html($('#detail').html() + "<br />")
         }
+    }
 
-        //partial view
-        var arrPro = [];
+    function CalculateResult() {
+
+        var arrSelectedProduction = [];
         $('#production').find('input').each(function () {
-            arrPro.push({
-                ID: $($(this)[0]).attr('data-id'),
-                Name: $($(this)[0]).attr('data-name'),
-                Price: $($(this)[0]).attr('data-price'),
-                Company: $($(this)[0]).attr('data-company'),
-                Count: $(this)[0].value,
-            });
+            if ($(this)[0].value > 0) {
+                arrSelectedProduction.push({
+                    ID: $($(this)[0]).attr('data-id'),
+                    Name: $($(this)[0]).attr('data-name'),
+                    Price: $($(this)[0]).attr('data-price'),
+                    Company: $($(this)[0]).attr('data-company'),
+                    Count: $(this)[0].value,
+                });
+            }
         });
+
+        if (arrSelectedProduction.length == 0) {
+            alert("請選擇商品！");
+            return;
+        }
+        if ($('#ddlShipment').val() == "") {
+            alert("請選擇物流！");
+            return;
+        }
 
         $.ajax({
             url: '@Url.Action("Info", "ShopCar")',
             type: "POST",
             datatype: "json",
-            data: { ProductionList: arrPro },
+            data: {
+                ProductionList: arrSelectedProduction,
+                ShipmentID: $('#ddlShipment').val()
+            },
         }).done(function (partialViewResult) {
             $("#Info").html(partialViewResult);
         });
 
     }
-
 
 </script>
